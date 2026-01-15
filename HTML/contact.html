@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liên Hệ - MamaCore</title>
+    <link rel="stylesheet" href="../CSS/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-wrapper">
+                <div class="logo">
+                    <i class="fas fa-heart"></i>
+                    <span>MamaCore</span>
+                </div>
+                <button class="menu-toggle" id="menuToggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <ul class="nav-menu" id="navMenu">
+                    <li><a href="../index.html">Trang Chủ</a></li>
+                    <li><a href="about.html">Giới Thiệu</a></li>
+                    <li><a href="services.html" class="active">Dịch Vụ</a></li>
+                    <li><a href="contact.html">Liên Hệ</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <!-- <div class="page-header">
+        <h1>Liên Hệ Với Chúng Tôi</h1>
+        <p>Chúng tôi sẵn sàng lắng nghe và trợ giúp bạn</p>
+    </div> -->
+    <section class="about-hero">
+        <div class="about-hero-overlay"></div>
+
+        <div class="about-hero-content">
+            <h1>Liên Hệ Với Chúng Tôi <span>MamaCore</span></h1>
+            <p>Chúng tôi sẵn sàng lắng nghe và trợ giúp bạn</p>
+
+            <div class="about-hero-line"></div>
+        </div>
+    </section>
+    <!-- Contact Section -->
+    <section class="contact-section">
+        <div class="container">
+            <div class="contact-wrapper">
+                <!-- Contact Info -->
+                <div class="contact-info">
+                    <h2>Thông Tin Liên Hệ</h2>
+                    
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="info-content">
+                            <h4>Địa Chỉ</h4>
+                            <p>123 Đường Lý Thường Kiệt, Quận Hoàn Kiếm, Hà Nội</p>
+                            <p>456 Đường Nguyễn Hữu Cảnh, Quận Bình Thạnh, TP.HCM</p>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div class="info-content">
+                            <h4>Điện Thoại</h4>
+                            <p><a href="tel:1900-1234">1900-1234</a></p>
+                            <p><a href="tel:0243-123-4567">024-3123-4567 (Hà Nội)</a></p>
+                            <p><a href="tel:0283-123-4567">028-3123-4567 (TP.HCM)</a></p>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="info-content">
+                            <h4>Email</h4>
+                            <p><a href="mailto:info@mamacore.vn">info@mamacore.vn</a></p>
+                            <p><a href="mailto:support@mamacore.vn">support@mamacore.vn</a></p>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="info-content">
+                            <h4>Giờ Làm Việc</h4>
+                            <p>Thứ 2 - Thứ 6: 8:00 - 17:30</p>
+                            <p>Thứ 7 - Chủ Nhật: 8:00 - 12:00</p>
+                            <p>Chúng tôi mở cửa 24/7 cho các trường hợp khẩn cấp</p>
+                        </div>
+                    </div>
+
+                    <!-- Social Links -->
+                    <div class="social-info">
+                        <h4>Kết Nối Với Chúng Tôi</h4>
+                        <div class="social-links">
+                            <a href="#" title="Facebook"><i class="fab fa-facebook"></i></a>
+                            <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
+                            <a href="#" title="YouTube"><i class="fab fa-youtube"></i></a>
+                            <a href="#" title="Zalo"><i class="fas fa-phone"></i></a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Form -->
+                <div class="contact-form-wrapper">
+                    <h2>Gửi Tin Nhắn Cho Chúng Tôi</h2>
+                    <form class="contact-form" onsubmit="handleContactSubmit(event)">
+                        <div class="form-group">
+                            <label for="name">Họ và Tên *</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="email">Email *</label>
+                                <input type="email" id="email" name="email" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">Số Điện Thoại</label>
+                                <input type="tel" id="phone" name="phone">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="subject">Chủ Đề *</label>
+                            <input type="text" id="subject" name="subject" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="service">Dịch Vụ Quan Tâm</label>
+                            <select id="service" name="service">
+                                <option value="">Chọn dịch vụ</option>
+                                <option value="pregnancy-check">Khám Thai</option>
+                                <option value="postnatal-care">Chăm Sóc Sau Sinh</option>
+                                <option value="newborn-check">Khám Sơ Sinh</option>
+                                <option value="parenting-consult">Tư Vấn Nuôi Dạy Con</option>
+                                <option value="general-check">Khám Tổng Quát</option>
+                                <option value="online-consult">Tư Vấn Trực Tuyến</option>
+                                <option value="other">Khác</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="message">Nội Dung *</label>
+                            <textarea id="message" name="message" rows="5" required></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Gửi Tin Nhắn</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Map Section -->
+    <section class="map-section">
+        <h2>Vị Trí Chi Nhánh</h2>
+        <div class="maps-container">
+            <div class="map-item">
+                <h3>Hà Nội</h3>
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3723.6890234567!2d105.85!3d21.03!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135ab9bd9999999%3A0x1234567890!2zMTIzIEzDvSBUaOC6rG5nIEvhu5FuLCBIw6AgTuG7mWksIFZp4buHdCBOYW0!5e0!3m2!1svi!2s!4v1234567890" width="400" height="300" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </div>
+            <div class="map-item">
+                <h3>TP. Hồ Chí Minh</h3>
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.6890234567!2d106.68!3d10.77!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752abc1234567!2zNDU2IE5ndXnDqm4gSMWpdSBDw6FuaA!5e0!3m2!1svi!2s!4v1234567890" width="400" height="300" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq-section">
+        <div class="container">
+            <h2>Câu Hỏi Thường Gặp</h2>
+            <div class="faq-items">
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <h4>Làm sao để đặt lịch khám?</h4>
+                        <span class="faq-icon"><i class="fas fa-chevron-down"></i></span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Bạn có thể đặt lịch khám thông qua điện thoại (1900-1234), email (info@mamacore.vn) hoặc trực tiếp tại phòng khám của chúng tôi.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <h4>Giá khám là bao nhiêu?</h4>
+                        <span class="faq-icon"><i class="fas fa-chevron-down"></i></span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Giá khám tùy thuộc vào loại dịch vụ. Vui lòng xem trang Dịch Vụ để biết giá chi tiết hoặc liên hệ với chúng tôi để được tư vấn.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <h4>Có bảo hiểm y tế không?</h4>
+                        <span class="faq-icon"><i class="fas fa-chevron-down"></i></span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Có, chúng tôi chấp nhận bảo hiểm y tế. Hãy mang theo thẻ bảo hiểm y tế khi đến khám.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <h4>Thời gian chờ khám thường là bao lâu?</h4>
+                        <span class="faq-icon"><i class="fas fa-chevron-down"></i></span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Thời gian chờ tùy thuộc vào số lượng bệnh nhân. Thông thường, bệnh nhân được khám trong vòng 15-30 phút sau khi đến.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <h4>Có dịch vụ tư vấn trực tuyến không?</h4>
+                        <span class="faq-icon"><i class="fas fa-chevron-down"></i></span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Có, chúng tôi cung cấp dịch vụ tư vấn trực tuyến 24/7 qua video call, chat hoặc điện thoại.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <h4>Bác sĩ của bạn có kinh nghiệm bao nhiêu?</h4>
+                        <span class="faq-icon"><i class="fas fa-chevron-down"></i></span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Đội ngũ bác sĩ của chúng tôi có từ 7-20+ năm kinh nghiệm trong lĩnh vực sản phụ khoa và nhi khoa.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>MamaCore</h3>
+                    <p>Cung cấp dịch vụ chăm sóc sức khỏe mẹ và bé chuyên nghiệp</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Liên Kết Nhanh</h4>
+                    <ul>
+                        <li><a href="about.html">Giới Thiệu</a></li>
+                        <li><a href="services.html">Dịch Vụ</a></li>
+                        
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Liên Hệ</h4>
+                    <p><i class="fas fa-phone"></i> 1900-1234</p>
+                    <p><i class="fas fa-envelope"></i> info@mamacore.vn</p>
+                    <p><i class="fas fa-map-marker-alt"></i> Hà Nội, Việt Nam</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Mạng Xã Hội</h4>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 MamaCore. Tất cả quyền được bảo lưu.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../JS/style.js"></script>
+</body>
+</html>
