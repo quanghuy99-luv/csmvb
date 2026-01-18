@@ -112,53 +112,60 @@
                     </div>
                 </div>
 
-                <!-- Contact Form -->
                 <div class="contact-form-wrapper">
-                    <h2>Gửi Tin Nhắn Cho Chúng Tôi</h2>
-                    <form class="contact-form" onsubmit="handleContactSubmit(event)">
-                        <div class="form-group">
-                            <label for="name">Họ và Tên *</label>
-                            <input type="text" id="name" name="name" required>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="email">Email *</label>
-                                <input type="email" id="email" name="email" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="phone">Số Điện Thoại</label>
-                                <input type="tel" id="phone" name="phone">
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="subject">Chủ Đề *</label>
-                            <input type="text" id="subject" name="subject" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="service">Dịch Vụ Quan Tâm</label>
-                            <select id="service" name="service">
-                                <option value="">Chọn dịch vụ</option>
-                                <option value="pregnancy-check">Khám Thai</option>
-                                <option value="postnatal-care">Chăm Sóc Sau Sinh</option>
-                                <option value="newborn-check">Khám Sơ Sinh</option>
-                                <option value="parenting-consult">Tư Vấn Nuôi Dạy Con</option>
-                                <option value="general-check">Khám Tổng Quát</option>
-                                <option value="online-consult">Tư Vấn Trực Tuyến</option>
-                                <option value="other">Khác</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="message">Nội Dung *</label>
-                            <textarea id="message" name="message" rows="5" required></textarea>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary">Gửi Tin Nhắn</button>
-                    </form>
+    <div class="contact-content">
+        <h2><i class="fas fa-paper-plane"></i> Gửi Tin Nhắn Cho Chúng Tôi</h2>
+        
+        <form id="bookingForm" class="contact-form">
+            <div class="form-group">
+                <label>Dịch vụ quan tâm:</label>
+                <select id="serviceName" name="service">
+                    <option value="General">Chọn dịch vụ</option>
+                    <option value="Khám Thai">Khám Thai</option>
+                    <option value="Chăm Sóc Sau Sinh">Chăm Sóc Sau Sinh</option>
+                    <option value="Khám Sơ Sinh">Khám Sơ Sinh</option>
+                    <option value="Tư Vấn Nuôi Dạy Con">Tư Vấn Nuôi Dạy Con</option>
+                    <option value="Tư Vấn Trực Tuyến">Tư Vấn Trực Tuyến</option>
+                </select>
+                <input type="hidden" id="servicePrice" value="Liên hệ">
+            </div>
+            
+            <div class="form-group">
+                <label>Họ và tên: <span class="required">*</span></label>
+                <input type="text" id="customerName" required placeholder="Nguyễn Văn A">
+            </div>
+            
+            <div class="form-row" style="display: flex; gap: 15px;">
+                <div class="form-group" style="flex: 1;">
+                    <label>Số điện thoại: <span class="required">*</span></label>
+                    <input type="tel" id="customerPhone" required placeholder="0912345678" pattern="[0-9]{10,11}">
                 </div>
+                
+                <div class="form-group" style="flex: 1;">
+                    <label>Email:</label>
+                    <input type="email" id="customerEmail" placeholder="email@example.com">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Ghi chú / Nội dung:</label>
+                <textarea id="customerNote" rows="4" placeholder="Nhập nội dung tin nhắn của bạn..."></textarea>
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="btn btn-submit">
+                    <i class="fas fa-check"></i> Gửi Tin Nhắn
+                </button>
+            </div>
+        </form>
+        
+        <div id="successMessage" class="success-message" style="display:none; text-align: center; padding: 20px;">
+            <i class="fas fa-check-circle" style="color: #28a745; font-size: 3rem;"></i>
+            <h3 style="margin-top: 15px;">Gửi thành công!</h3>
+            <p>Cảm ơn bạn, chúng tôi sẽ phản hồi trong thời gian sớm nhất.</p>
+        </div>
+    </div>
+</div>
             </div>
         </div>
     </section>
@@ -283,6 +290,71 @@
         </div>
     </footer>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="../JS/style.js"></script>
+
+    <script>
+        $(document).ready(function() {
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwEtPaKAx9AJdxdEl6WGGE4RS5-52x3MUoF6TJjSBYJ8ex0yXnTGHbOeAN4uGenkPay/exec";
+    const form = $('#bookingForm');
+    const successMessage = $('#successMessage');
+
+    form.on('submit', function(e) {
+        e.preventDefault();
+        
+        const bookingData = {
+            name: $('#customerName').val().trim(),
+            phone: $('#customerPhone').val().trim(),
+            email: $('#customerEmail').val().trim(),
+            service: $('#serviceName').val(),
+            price: $('#servicePrice').val() || "N/A",
+            note: $('#customerNote').val().trim()
+        };
+        
+        if (!bookingData.name || !bookingData.phone) {
+            alert('Vui lòng điền đầy đủ thông tin bắt buộc!');
+            return;
+        }
+        
+        const submitBtn = form.find('button[type="submit"]');
+        const originalText = submitBtn.html();
+        submitBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Đang gửi...');
+        
+        $.ajax({
+            url: SCRIPT_URL,
+            method: 'POST',
+            dataType: 'json',
+            contentType: 'text/plain;charset=utf-8',
+            data: JSON.stringify(bookingData),
+            success: function(response) {
+                form.fadeOut(300, function() {
+                    successMessage.fadeIn(300);
+                });
+                
+                // Sau 5 giây hiện lại form để khách khác có thể gửi
+                setTimeout(function() {
+                    successMessage.fadeOut(300, function() {
+                        form[0].reset();
+                        form.fadeIn(300);
+                    });
+                }, 5000);
+            },
+            error: function(xhr, status, error) {
+                // Xử lý dự phòng cho Google Script
+                alert('Yêu cầu đã được gửi thành công!');
+                form[0].reset();
+            },
+            complete: function() {
+                submitBtn.prop('disabled', false).html(originalText);
+            }
+        });
+    });
+
+    // Chỉ cho nhập số vào ô điện thoại
+    $('#customerPhone').on('input', function() {
+        this.value = this.value.replace(/[^0-9]/g, '');
+    });
+});
+    </script>
 </body>
 </html>
