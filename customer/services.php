@@ -6,22 +6,32 @@ $conn = $db->getConnection();
 
 // ================= HANDLE INSERT =================
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax'])) {
+    header('Content-Type: application/json; charset=utf-8');
+    
     try {
+        // Get service ID from service name (tendichvu)
+        $serviceStmt = $conn->prepare("SELECT id FROM dichvu WHERE tendichvu = ? LIMIT 1");
+        $serviceStmt->execute([$_POST['service_name']]);
+        $service = $serviceStmt->fetch();
+        
+        $dichvu_id = $service ? $service['id'] : null;
+        
+        // Insert into bookings table with correct fields
         $stmt = $conn->prepare("
             INSERT INTO bookings (
-                service_name,
-                service_price,
+                dichvu_id,
                 customer_name,
                 phone,
                 email,
                 note,
+                booking_date,
+                status,
                 created_at
-            ) VALUES (?, ?, ?, ?, ?, ?, NOW())
+            ) VALUES (?, ?, ?, ?, ?, NOW(), 'pending', NOW())
         ");
 
         $stmt->execute([
-            $_POST['service_name'],
-            $_POST['service_price'],
+            $dichvu_id,
             $_POST['customer_name'],
             $_POST['customer_phone'],
             $_POST['customer_email'],
@@ -38,7 +48,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax'])) {
 /* ================= NORMAL PAGE ================= */
 require_once __DIR__ . '/components/header.php';
 renderHeader('Dịch Vụ - MamaCore');
+
+// Get all services from database
+try {
+    $servicesStmt = $conn->prepare("SELECT * FROM dichvu WHERE status = 1 ORDER BY id");
+    $servicesStmt->execute();
+    $services = $servicesStmt->fetchAll();
+} catch (PDOException $e) {
+    $services = [];
+}
+
+// Get all services from database
+try {
+    // Lấy dịch vụ kèm tên danh mục để hỗ trợ hiển thị
+    $servicesStmt = $conn->prepare("SELECT d.*, c.name as category_name FROM dichvu d LEFT JOIN service_category c ON d.category_id = c.id WHERE d.status = 1 ORDER BY d.id");
+    $servicesStmt->execute();
+    $services = $servicesStmt->fetchAll();
+
+    // Lấy danh sách danh mục để tạo bộ lọc
+    $catStmt = $conn->prepare("SELECT * FROM service_category WHERE status = 1");
+    $catStmt->execute();
+    $categories = $catStmt->fetchAll();
+} catch (PDOException $e) {
+    $services = [];
+    $categories = [];
+}
 ?>
+
 
 
 <!-- Services Hero Banner -->
@@ -49,172 +85,74 @@ renderHeader('Dịch Vụ - MamaCore');
         <div style="width: 60px; height: 3px; background-color: #F06292; margin: 0 auto;"></div>
     </div>
 </section>
-
+<div class="container mt-4 mb-2">
+    <div class="d-flex justify-content-center flex-wrap gap-2">
+        <button class="btn btn-outline-danger active rounded-pill px-4 filter-btn" data-filter="all">Tất cả</button>
+        <?php foreach ($categories as $cat): ?>
+            <button class="btn btn-outline-danger rounded-pill px-4 filter-btn" data-filter="cat-<?php echo $cat['id']; ?>">
+                <?php echo htmlspecialchars($cat['name']); ?>
+            </button>
+        <?php endforeach; ?>
+    </div>
+</div>
 <!-- Services Detail -->
 <section class="py-5">
     <div class="container py-lg-5">
-        <!-- Service 1 -->
-        <div class="row align-items-center mb-5 g-5">
-            <div class="col-lg-6">
-                <img src="https://benhvienphuongdong.vn/public/uploads/2023/thang-7/cau-hoi-thang-7/kham-thai-dinh-ky-nhu-the-nao-la-hop-ly-1.jpg" alt="Khám Thai" class="img-fluid rounded-4 shadow-lg">
+        <?php if (!empty($services)): ?>
+            <?php foreach ($services as $index => $service): ?>
+                <?php 
+                    $isReverse = ($index % 2 !== 0);
+                ?>
+                <!-- Service <?php echo $index + 1; ?> -->
+                 <div class="row align-items-center mb-5 g-5 service-item cat-<?php echo $service['category_id']; ?> <?php echo $isReverse ? 'flex-lg-row-reverse' : ''; ?>">
+                <div class="row align-items-center mb-5 g-5 <?php echo $isReverse ? 'flex-lg-row-reverse' : ''; ?>">
+                    <div class="col-lg-6">
+                        <img src="../<?php echo htmlspecialchars($service['hinh_anh']); ?>" alt="<?php echo htmlspecialchars($service['tendichvu']); ?>" class="img-fluid rounded-4 shadow-lg">
+                    </div>
+                    <div class="col-lg-6">
+                        <h2 class="fw-bold display-6 mb-3" style="color: #F06292;"><?php echo htmlspecialchars($service['tendichvu']); ?></h2>
+                        <p style="color: #666; line-height: 1.8; margin-bottom: 20px;">
+                            <?php echo $service['mo_ta_ngan'] ? htmlspecialchars($service['mo_ta_ngan']) : 'Dịch vụ chuyên nghiệp và tận tâm cho sức khỏe mẹ và bé.'; ?>
+                        </p>
+                        <h4 class="fw-bold mb-3">Bao Gồm:</h4>
+                        <ul class="list-unstyled mb-4">
+                            <?php 
+                                // Parse noi_dung_chi_tiet if available
+                                if ($service['noi_dung_chi_tiet']) {
+                                    $items = array_filter(array_map('trim', explode("\n", $service['noi_dung_chi_tiet'])));
+                                    foreach ($items as $item):
+                            ?>
+                                <li style="padding: 8px 0; color: #555;"><i class="fas fa-check" style="color: #F06292; margin-right: 10px;"></i> <?php echo htmlspecialchars($item); ?></li>
+                            <?php 
+                                    endforeach;
+                                } else {
+                            ?>
+                                <li style="padding: 8px 0; color: #555;"><i class="fas fa-check" style="color: #F06292; margin-right: 10px;"></i> Dịch vụ chất lượng cao</li>
+                                <li style="padding: 8px 0; color: #555;"><i class="fas fa-check" style="color: #F06292; margin-right: 10px;"></i> Đội ngũ chuyên nghiệp</li>
+                                <li style="padding: 8px 0; color: #555;"><i class="fas fa-check" style="color: #F06292; margin-right: 10px;"></i> Tận tâm với khách hàng</li>
+                            <?php 
+                                }
+                            ?>
+                        </ul>
+                        <p class="fw-bold mb-3" style="color: #F06292; font-size: 1.1rem;">Giá: <?php echo $service['gia']; ?> VNĐ</p>
+                        <button class="btn-book btn text-white rounded-pill px-4 py-2 shadow-sm" style="background-color: #F06292; border: none; cursor: pointer; transition: 0.3s;" 
+                                data-service="<?php echo htmlspecialchars($service['tendichvu']); ?>" 
+                                data-price="<?php echo $service['gia']; ?> VNĐ"
+                                onmouseover="this.style.backgroundColor='#d84374'; this.style.transform='scale(1.05)';"
+                                onmouseout="this.style.backgroundColor='#F06292'; this.style.transform='scale(1)';">
+                            <i class="fas fa-calendar-check"></i> Đặt Lịch Ngay
+                        </button>
+                    </div>
+                </div>
+                </div>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <p class="lead text-muted">Hiện tại chúng tôi chưa có dịch vụ nào. Vui lòng quay lại sau.</p>
+                </div>
             </div>
-            <div class="col-lg-6">
-                <h2 class="fw-bold display-6 mb-3" style="color: #F06292;">Khám Thai Định Kỳ</h2>
-                <p style="color: #666; line-height: 1.8; margin-bottom: 20px;">Khám sức khỏe toàn diện cho mẹ bầu từ giai đoạn đầu đến cuối thai kỳ, giúp phát hiện sớm các vấn đề bất thường.</p>
-                <h4 class="fw-bold mb-3">Bao Gồm:</h4>
-                <ul class="list-unstyled mb-4">
-                    <li style="padding: 8px 0; color: #555;"><i class="fas fa-check" style="color: #F06292; margin-right: 10px;"></i> Siêu âm thai định kỳ</li>
-                    <li style="padding: 8px 0; color: #555;"><i class="fas fa-check" style="color: #F06292; margin-right: 10px;"></i> Xét nghiệm máu và nước tiểu</li>
-                    <li style="padding: 8px 0; color: #555;"><i class="fas fa-check" style="color: #F06292; margin-right: 10px;"></i> Đo huyết áp và cân nặng</li>
-                    <li style="padding: 8px 0; color: #555;"><i class="fas fa-check" style="color: #F06292; margin-right: 10px;"></i> Tư vấn dinh dưỡng</li>
-                    <li style="padding: 8px 0; color: #555;"><i class="fas fa-check" style="color: #F06292; margin-right: 10px;"></i> Hướng dẫn vận động an toàn</li>
-                </ul>
-                <p class="fw-bold mb-3" style="color: #F06292; font-size: 1.1rem;">Giá: 300.000 - 500.000 VNĐ/lần</p>
-                <button class="btn-book btn text-white rounded-pill px-4 py-2 shadow-sm" style="background-color: #F06292; border: none; cursor: pointer; transition: 0.3s;" 
-                        data-service="Khám Thai Định Kỳ" 
-                        data-price="300.000 - 500.000 VNĐ"
-                        onmouseover="this.style.backgroundColor='#d84374'; this.style.transform='scale(1.05)';"
-                        onmouseout="this.style.backgroundColor='#F06292'; this.style.transform='scale(1)';">
-                    <i class="fas fa-calendar-check"></i> Đặt Lịch Ngay
-                </button>
-            </div>
-        </div>
-
-        <!-- Service 2 -->
-        <div class="row align-items-center mb-5 g-5 flex-lg-row-reverse">
-            <div class="col-lg-6">
-                <img src="https://cdn-assets-eu.frontify.com/s3/frontify-enterprise-files-eu/eyJwYXRoIjoiaWhoLWhlYWx0aGNhcmUtYmVyaGFkXC9maWxlXC82bUxQMjVRTHA2N0RVQ0ZBMU5DWi5qcGcifQ:ihh-healthcare-berhad:CjsNhFgI6H2chfxft2Rp6osWNH5uqh-DDusT7Jnlgdo?format=webp" alt="Chăm Sóc Sau Sinh" class="img-fluid rounded-4 shadow-lg">
-            </div>
-            <div class="col-lg-6">
-                <h2 class="fw-bold display-6 mb-3" style="color: #F06292;">Chăm Sóc Sau Sinh</h2>
-                <p style="color: #666; line-height: 1.8; margin-bottom: 20px;">Hỗ trợ toàn diện cho mẹ sau khi sinh, giúp phục hồi sức khỏe, tâm lý và hỗ trợ nuôi con bằng sữa mẹ.</p>
-                <h4 class="fw-bold mb-3">Bao Gồm:</h4>
-                <ul class="list-unstyled mb-4">
-                    <li style="padding: 8px 0; color: #555;"><i class="fas fa-check" style="color: #F06292; margin-right: 10px;"></i> Kiểm tra vết mổ/chỉ</li>
-                    <li style="padding: 8px 0; color: #555;"><i class="fas fa-check" style="color: #F06292; margin-right: 10px;"></i> Hướng dẫn tập luyện phục hồi</li>
-                    <li style="padding: 8px 0; color: #555;"><i class="fas fa-check" style="color: #F06292; margin-right: 10px;"></i> Tư vấn nuôi con bằng sữa mẹ</li>
-                    <li style="padding: 8px 0; color: #555;"><i class="fas fa-check" style="color: #F06292; margin-right: 10px;"></i> Giúp xử lý tình trạng trầm cảm sau sinh</li>
-                    <li style="padding: 8px 0; color: #555;"><i class="fas fa-check" style="color: #F06292; margin-right: 10px;"></i> Tư vấn dinh dưỡng để tăng sữa</li>
-                </ul>
-                <p class="fw-bold mb-3" style="color: #F06292; font-size: 1.1rem;">Giá: 500.000 - 800.000 VNĐ/liệu trình</p>
-                <button class="btn-book btn text-white rounded-pill px-4 py-2 shadow-sm" style="background-color: #F06292; border: none; cursor: pointer; transition: 0.3s;" 
-                        data-service="Chăm Sóc Sau Sinh" 
-                        data-price="500.000 - 800.000 VNĐ"
-                        onmouseover="this.style.backgroundColor='#d84374'; this.style.transform='scale(1.05)';"
-                        onmouseout="this.style.backgroundColor='#F06292'; this.style.transform='scale(1)';">
-                    <i class="fas fa-calendar-check"></i> Đặt Lịch Ngay
-                </button>
-            </div>
-        </div>
-
-        <!-- Service 3 -->
-        <div class="row align-items-center mb-5 g-5">
-            <div class="col-lg-6">
-                <img src="https://www.matsaigon.com/wp-content/uploads/2018/03/kham-mat-cho-tre-3-e1524565768759.jpg" alt="Khám Sơ Sinh" class="img-fluid rounded-4 shadow-lg">
-            </div>
-            <div class="col-lg-6">
-                <h2 class="fw-bold display-6 mb-3" style="color: #F06292;">Khám Sơ Sinh & Tiêm Chủng</h2>
-                <p style="color: #666; line-height: 1.8; margin-bottom: 20px;">Kiểm tra sức khỏe chi tiết cho bé sơ sinh, phát hiện sớm bất thường, hướng dẫn chăm sóc bé.</p>
-                <h4 class="fw-bold mb-3">Bao Gồm:</h4>
-                <ul class="list-unstyled mb-4">
-                    <li style="padding: 8px 0; color: #555;"><i class="fas fa-check" style="color: #F06292; margin-right: 10px;"></i> Khám tổng quát cho bé sơ sinh</li>
-                    <li style="padding: 8px 0; color: #555;"><i class="fas fa-check" style="color: #F06292; margin-right: 10px;"></i> Sàng lọc sơ sinh (Guthrie test)</li>
-                    <li style="padding: 8px 0; color: #555;"><i class="fas fa-check" style="color: #F06292; margin-right: 10px;"></i> Tiêm chủng đầy đủ theo lịch</li>
-                    <li style="padding: 8px 0; color: #555;"><i class="fas fa-check" style="color: #F06292; margin-right: 10px;"></i> Hướng dẫn chăm sóc bé hàng ngày</li>
-                    <li style="padding: 8px 0; color: #555;"><i class="fas fa-check" style="color: #F06292; margin-right: 10px;"></i> Xử lý các tình trạng thường gặp</li>
-                </ul>
-                <p class="fw-bold mb-3" style="color: #F06292; font-size: 1.1rem;">Giá: 200.000 - 400.000 VNĐ/lần</p>
-                <button class="btn-book btn text-white rounded-pill px-4 py-2 shadow-sm" style="background-color: #F06292; border: none; cursor: pointer; transition: 0.3s;" 
-                        data-service="Khám Sơ Sinh & Tiêm Chủng" 
-                        data-price="200.000 - 400.000 VNĐ"
-                        onmouseover="this.style.backgroundColor='#d84374'; this.style.transform='scale(1.05)';"
-                        onmouseout="this.style.backgroundColor='#F06292'; this.style.transform='scale(1)';">
-                    <i class="fas fa-calendar-check"></i> Đặt Lịch Ngay
-                </button>
-            </div>
-        </div>
-
-        <!-- Service 4 -->
-        <div class="row align-items-center mb-5 g-5 flex-lg-row-reverse">
-            <div class="col-lg-6">
-                <img src="https://www.friso.com.vn/sites/default/files/2022-11/cach-nuoi-day-con-thong-minh-thumbnail.jpg" alt="Tư Vấn Nuôi Dạy" class="img-fluid rounded-4 shadow-lg">
-            </div>
-            <div class="col-lg-6">
-                <h2 class="fw-bold display-6 mb-3" style="color: #F06292;">Tư Vấn Nuôi Dạy Con</h2>
-                <p style="color: #666; line-height: 1.8; margin-bottom: 20px;">Hướng dẫn cha mẹ cách nuôi dạy con khỏe mạnh, phát triển toàn diện và hạnh phúc.</p>
-                <h4 class="fw-bold mb-3">Bao Gồm:</h4>
-                <ul class="list-unstyled mb-4">
-                    <li style="padding: 8px 0; color: #555;"><i class="fas fa-check" style="color: #F06292; margin-right: 10px;"></i> Tư vấn dinh dưỡng theo độ tuổi</li>
-                    <li style="padding: 8px 0; color: #555;"><i class="fas fa-check" style="color: #F06292; margin-right: 10px;"></i> Hướng dẫn phát triển tâm lý</li>
-                    <li style="padding: 8px 0; color: #555;"><i class="fas fa-check" style="color: #F06292; margin-right: 10px;"></i> Xử lý các vấn đề hành vi</li>
-                    <li style="padding: 8px 0; color: #555;"><i class="fas fa-check" style="color: #F06292; margin-right: 10px;"></i> Tư vấn giáo dục sớm</li>
-                    <li style="padding: 8px 0; color: #555;"><i class="fas fa-check" style="color: #F06292; margin-right: 10px;"></i> Hỗ trợ điều hành áp lực làm cha mẹ</li>
-                </ul>
-                <p class="fw-bold mb-3" style="color: #F06292; font-size: 1.1rem;">Giá: 250.000 - 400.000 VNĐ/buổi</p>
-                <button class="btn-book btn text-white rounded-pill px-4 py-2 shadow-sm" style="background-color: #F06292; border: none; cursor: pointer; transition: 0.3s;" 
-                        data-service="Tư Vấn Nuôi Dạy Con" 
-                        data-price="250.000 - 400.000 VNĐ"
-                        onmouseover="this.style.backgroundColor='#d84374'; this.style.transform='scale(1.05)';"
-                        onmouseout="this.style.backgroundColor='#F06292'; this.style.transform='scale(1)';">
-                    <i class="fas fa-calendar-check"></i> Đặt Lịch Ngay
-                </button>
-            </div>
-        </div>
-
-        <!-- Service 5 -->
-        <div class="row align-items-center mb-5 g-5">
-            <div class="col-lg-6">
-                <img src="https://medlatec.vn/media/9861/content/20210813_Khi-nao-nen-cho-be-di-kham-suc-khoe-tong-quat-4.jpg" alt="Khám Tổng Quát" class="img-fluid rounded-4 shadow-lg">
-            </div>
-            <div class="col-lg-6">
-                <h2 class="fw-bold display-6 mb-3" style="color: #F06292;">Khám Tổng Quát Định Kỳ</h2>
-                <p style="color: #666; line-height: 1.8; margin-bottom: 20px;">Khám sức khỏe toàn diện cho trẻ em từ sơ sinh đến 18 tuổi, phát hiện sớm các vấn đề sức khỏe.</p>
-                <h4 class="fw-bold mb-3">Bao Gồm:</h4>
-                <ul class="list-unstyled mb-4">
-                    <li style="padding: 8px 0; color: #555;"><i class="fas fa-check" style="color: #F06292; margin-right: 10px;"></i> Kiểm tra toàn thân chi tiết</li>
-                    <li style="padding: 8px 0; color: #555;"><i class="fas fa-check" style="color: #F06292; margin-right: 10px;"></i> Đánh giá sự phát triển</li>
-                    <li style="padding: 8px 0; color: #555;"><i class="fas fa-check" style="color: #F06292; margin-right: 10px;"></i> Xét nghiệm y tế định kỳ</li>
-                    <li style="padding: 8px 0; color: #555;"><i class="fas fa-check" style="color: #F06292; margin-right: 10px;"></i> Tư vấn sức khỏe tổng quát</li>
-                    <li style="padding: 8px 0; color: #555;"><i class="fas fa-check" style="color: #F06292; margin-right: 10px;"></i> Hướng dẫn phòng bệnh</li>
-                </ul>
-                <p class="fw-bold mb-3" style="color: #F06292; font-size: 1.1rem;">Giá: 350.000 - 600.000 VNĐ/lần</p>
-                <button class="btn-book btn text-white rounded-pill px-4 py-2 shadow-sm" style="background-color: #F06292; border: none; cursor: pointer; transition: 0.3s;" 
-                        data-service="Khám Tổng Quát Định Kỳ" 
-                        data-price="350.000 - 600.000 VNĐ"
-                        onmouseover="this.style.backgroundColor='#d84374'; this.style.transform='scale(1.05)';"
-                        onmouseout="this.style.backgroundColor='#F06292'; this.style.transform='scale(1)';">
-                    <i class="fas fa-calendar-check"></i> Đặt Lịch Ngay
-                </button>
-            </div>
-        </div>
-
-        <!-- Service 6 -->
-        <div class="row align-items-center g-5 flex-lg-row-reverse">
-            <div class="col-lg-6">
-                <img src="https://cdn.prod.website-files.com/5c93193a199a685a12dd8142/6096000b98ae6506677fcc99_tv.jpg" alt="Tư Vấn Trực Tuyến" class="img-fluid rounded-4 shadow-lg">
-            </div>
-            <div class="col-lg-6">
-                <h2 class="fw-bold display-6 mb-3" style="color: #F06292;">Tư Vấn Trực Tuyến 24/7</h2>
-                <p style="color: #666; line-height: 1.8; margin-bottom: 20px;">Dịch vụ tư vấn sức khỏe qua video call, chat hoặc điện thoại với bác sĩ bất kỳ lúc nào.</p>
-                <h4 class="fw-bold mb-3">Bao Gồm:</h4>
-                <ul class="list-unstyled mb-4">
-                    <li style="padding: 8px 0; color: #555;"><i class="fas fa-check" style="color: #F06292; margin-right: 10px;"></i> Tư vấn trực tuyến 24/7</li>
-                    <li style="padding: 8px 0; color: #555;"><i class="fas fa-check" style="color: #F06292; margin-right: 10px;"></i> Ghi chú y tế điện tử</li>
-                    <li style="padding: 8px 0; color: #555;"><i class="fas fa-check" style="color: #F06292; margin-right: 10px;"></i> Kê đơn thuốc trực tuyến</li>
-                    <li style="padding: 8px 0; color: #555;"><i class="fas fa-check" style="color: #F06292; margin-right: 10px;"></i> Theo dõi sức khỏe</li>
-                    <li style="padding: 8px 0; color: #555;"><i class="fas fa-check" style="color: #F06292; margin-right: 10px;"></i> Hỗ trợ ứng phó khẩn cấp</li>
-                </ul>
-                <p class="fw-bold mb-3" style="color: #F06292; font-size: 1.1rem;">Giá: 150.000 - 250.000 VNĐ/buổi</p>
-                <button class="btn-book btn text-white rounded-pill px-4 py-2 shadow-sm" style="background-color: #F06292; border: none; cursor: pointer; transition: 0.3s;" 
-                        data-service="Tư Vấn Trực Tuyến 24/7" 
-                        data-price="150.000 - 250.000 VNĐ"
-                        onmouseover="this.style.backgroundColor='#d84374'; this.style.transform='scale(1.05)';"
-                        onmouseout="this.style.backgroundColor='#F06292'; this.style.transform='scale(1)';" onclick="openBookingModal(this)">
-
-                    <i class="fas fa-calendar-check"></i> Đặt Lịch Ngay
-                </button>
-            </div>
-        </div>
+        <?php endif; ?>
     </div>
 </section>
 
@@ -228,6 +166,7 @@ renderHeader('Dịch Vụ - MamaCore');
         onclick="window.location.href='contact.php'" onmouseover="this.style.backgroundColor='#d84374'; this.style.transform='scale(1.05)';" onmouseout="this.style.backgroundColor='#F06292'; this.style.transform='scale(1)';">Đặt Lịch Ngay</button>
     </div>
 </section>
+
 <!-- Booking Modal -->
 <div id="bookingModal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.4); overflow-y: auto;">
     <div style="position: relative; margin: 10% auto; width: 90%; max-width: 500px;">
@@ -301,7 +240,8 @@ $(function () {
     const modal = $('#bookingModal');
     const form = $('#bookingForm');
     const successMessage = $('#successMessage');
-
+    
+    // Google Sheet URL
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwEtPaKAx9AJdxdEl6WGGE4RS5-52x3MUoF6TJjSBYJ8ex0yXnTGHbOeAN4uGenkPay/exec';
 
     /* ================= OPEN MODAL ================= */
@@ -329,8 +269,8 @@ $(function () {
         e.preventDefault();
 
         const bookingData = {
-            service: $('#serviceName').val(),
-            price: $('#servicePrice').val(),
+            service: $('#serviceName').val().trim(),
+            price: $('#servicePrice').val().trim(),
             name: $('#customerName').val().trim(),
             phone: $('#customerPhone').val().trim(),
             email: $('#customerEmail').val().trim(),
@@ -347,45 +287,72 @@ $(function () {
             url: SCRIPT_URL,
             method: 'POST',
             contentType: 'text/plain;charset=utf-8',
-            data: JSON.stringify(bookingData)
+            data: JSON.stringify(bookingData),
+            error: function() {
+                console.log('Lưu Google Sheet thất bại (bình thường nếu CORS)');
+            }
         });
 
-            /* ===== 2. SAVE DATABASE (PHP) ===== */
-    $.post('', {
-        ajax: 1,
-        service_name: bookingData.service,
-        service_price: bookingData.price,
-        customer_name: bookingData.name,
-        customer_phone: bookingData.phone,
-        customer_email: bookingData.email,
-        customer_note: bookingData.note
-    }, function (res) {
-        // res đã là một Object nhờ Header JSON từ PHP, không cần JSON.parse
-        if (res.status === 'success') {
-            form.hide();
-            successMessage.fadeIn(300);
+        /* ===== 2. SAVE DATABASE (PHP) ===== */
+        $.post('', {
+            ajax: 1,
+            service_name: bookingData.service,
+            customer_name: bookingData.name,
+            customer_phone: bookingData.phone,
+            customer_email: bookingData.email,
+            customer_note: bookingData.note
+        }, function (res) {
+            // res đã là một Object nhờ Header JSON từ PHP
+            if (res.status === 'success') {
+                form.hide();
+                successMessage.fadeIn(300);
 
-            setTimeout(() => {
-                modal.fadeOut(300);
-                form[0].reset();
-                form.show();
-                successMessage.hide();
-            }, 2500);
-        } else {
-            alert('Lỗi DB: ' + (res.msg || 'Không rõ lỗi'));
-        }
-    }, 'json').fail(function() {
-        alert('Không thể kết nối với server');
-    });
+                setTimeout(() => {
+                    modal.fadeOut(300);
+                    form[0].reset();
+                    form.show();
+                    successMessage.hide();
+                }, 2500);
+            } else {
+                alert('Lỗi DB: ' + (res.msg || 'Không rõ lỗi'));
+            }
+        }, 'json').fail(function() {
+            alert('Không thể kết nối với server');
         });
-
-        /* ================= PHONE NUMBER ================= */
-        $('#customerPhone').on('input', function () {
-            this.value = this.value.replace(/[^0-9]/g, '');
-        });
-
     });
 
+    /* ================= PHONE NUMBER ================= */
+    $('#customerPhone').on('input', function () {
+        this.value = this.value.replace(/[^0-9]/g, '');
+    });
+
+});
+
+function openBookingModal(element) {
+    $(element).click();
+}
+
+function closeBookingModal() {
+    $('#bookingModal').fadeOut(300);
+    $('#bookingForm')[0].reset();
+    $('#bookingForm').show();
+    $('#successMessage').hide();
+}
+/* ================= BOOTSTRAP FILTER LOGIC ================= */
+$('.filter-btn').on('click', function() {
+    // Xử lý active button
+    $('.filter-btn').removeClass('active');
+    $(this).addClass('active');
+
+    const filter = $(this).data('filter');
+
+    if (filter === 'all') {
+        $('.service-item').show(300); // Hiện tất cả với hiệu ứng nhẹ
+    } else {
+        $('.service-item').hide(); // Ẩn hết
+        $('.' + filter).show(300); // Chỉ hiện những cái thuộc danh mục được chọn
+    }
+});
 </script>
 
 <?php

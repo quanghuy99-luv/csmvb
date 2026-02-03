@@ -3,43 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MamaCore - Chăm Sóc Mẹ và Bé Chuyên Nghiệp</title>
-    
+    <title>MamaCore - Chăm Sóc Mẹ, Bé, Người Bệnh & Người Già</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="CSS/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
-
 </head>
 <body>
-<div style="font-family: 'Quicksand', sans-serif; ">
+<div style="font-family: 'Quicksand', sans-serif;">
+
+    <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm py-3">
         <div class="container">
-            <a class="navbar-brand d-flex align-items-center gap-2 fw-bold fs-3" href="index.html" style="color: #F06292;">
+            <a class="navbar-brand d-flex align-items-center gap-2 fw-bold fs-3" href="index.php" style="color: #F06292;">
                 <i class="fas fa-heart"></i>
                 <span>MamaCore</span>
             </a>
-            
-            <button class="navbar-toggler border-0" type="button" id="menuToggle" data-bs-toggle="collapse" data-bs-target="#navMenu">
+
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
             <div class="collapse navbar-collapse justify-content-end" id="navMenu">
                 <ul class="navbar-nav align-items-center gap-3">
-                    <li class="nav-item"><a class="nav-link fw-bold px-3 active" style="color: #F06292; font-size: larger;" href="index.php">Trang Chủ</a></li>
-                    <li class="nav-item"><a class="nav-link fw-bold px-3 " href="customer/about.php">Giới Thiệu</a></li>
+                    <li class="nav-item"><a class="nav-link fw-bold px-3 active" style="color:#F06292; font-size: larger;" href="index.php">Trang Chủ</a></li>
+                    <li class="nav-item"><a class="nav-link fw-bold px-3" href="customer/about.php">Giới Thiệu</a></li>
                     <li class="nav-item"><a class="nav-link fw-bold px-3" href="customer/services.php">Dịch Vụ</a></li>
                     <li class="nav-item"><a class="nav-link fw-bold px-3" href="customer/contact.php">Liên Hệ</a></li>
                     <li class="nav-item ms-lg-3">
-                        <a href="HTML/contact.html" class="btn text-white rounded-pill px-4 py-2 shadow-sm" style="background-color:#F06292;" onmouseover="this.style.backgroundColor='#d84374'; this.style.transform='scale(1.05)';"
-                            onmouseout="this.style.backgroundColor='#F06292'; this.style.transform='scale(1)';">Đặt Lịch Tư Vấn</a>
+                        <a href="customer/contact.php" class="btn text-white rounded-pill px-4 py-2 shadow-sm" style="background-color:#F06292;">Đặt Lịch Chăm Sóc</a>
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
- 
-    <section class="hero-section py-5" style="background: linear-gradient(135deg, #FFE1EC 0%, #FFFFFF 50%, #f7e0f4 100%);">
+<section class="hero-section py-5" style="background: linear-gradient(135deg, #FFE1EC 0%, #FFFFFF 50%, #f7e0f4 100%);">
         <div class="container py-lg-5">
             <div class="row align-items-center">
                 <div class="col-lg-6 text-center text-lg-start mb-5 mb-lg-0">
@@ -92,54 +91,91 @@
         </div>
     </section>
 
-    <section class="py-5">
-        <div class="container py-5">
-            <h2 class="text-center fw-bold display-5 mb-5">Các Dịch Vụ Chính</h2>
-            <div class="row g-4 mb-5" id="services-grid">
-                <div class="col-md-6 col-lg-3">
-                    <div class="card border-0 shadow-sm h-100 rounded-4 overflow-hidden hover-lift">
-                        <img src="https://benhvienphuongdong.vn/public/uploads/2023/thang-7/cau-hoi-thang-7/kham-thai-dinh-ky-nhu-the-nao-la-hop-ly-1.jpg" class="card-img-top" alt="Khám Thai" style="height: 200px; object-fit: cover;">
-                        <div class="card-body p-4 text-center">
-                            <h3 class="h5 fw-bold">Khám Thai</h3>
-                            <p class="card-text text-muted small">Khám sức khỏe toàn diện cho mẹ bầu.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-3">
-                    <div class="card border-0 shadow-sm h-100 rounded-4 overflow-hidden hover-lift">
-                        <img src="https://cdn-assets-eu.frontify.com/s3/frontify-enterprise-files-eu/eyJwYXRoIjoiaWhoLWhlYWx0aGNhcmUtYmVyaGFkXC9maWxlXC82bUxQMjVRTHA2N0RVQ0ZBMU5DWi5qcGcifQ:ihh-healthcare-berhad:CjsNhFgI6H2chfxft2Rp6osWNH5uqh-DDusT7Jnlgdo?format=webp" class="card-img-top" alt="Sau sinh" style="height: 200px; object-fit: cover;">
-                        <div class="card-body p-4 text-center">
-                            <h3 class="h5 fw-bold">Chăm Sóc Sau Sinh</h3>
-                            <p class="card-text text-muted small">Hỗ trợ phục hồi sức khỏe cho mẹ.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-3">
-                    <div class="card border-0 shadow-sm h-100 rounded-4 overflow-hidden hover-lift">
-                        <img src="https://www.matsaigon.com/wp-content/uploads/2018/03/kham-mat-cho-tre-3-e1524565768759.jpg" class="card-img-top" alt="Sơ sinh" style="height: 200px; object-fit: cover;">
-                        <div class="card-body p-4 text-center">
-                            <h3 class="h5 fw-bold">Khám Sơ Sinh</h3>
-                            <p class="card-text text-muted small">Kiểm tra chi tiết sức khỏe bé sơ sinh.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-3">
-                    <div class="card border-0 shadow-sm h-100 rounded-4 overflow-hidden hover-lift">
-                        <img src="https://www.friso.com.vn/sites/default/files/2022-11/cach-nuoi-day-con-thong-minh-thumbnail.jpg" class="card-img-top" alt="Tư vấn" style="height: 200px; object-fit: cover;">
-                        <div class="card-body p-4 text-center">
-                            <h3 class="h5 fw-bold">Nuôi Dạy Con</h3>
-                            <p class="card-text text-muted small">Hướng dẫn bé khỏe mạnh và hạnh phúc.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="text-center">
-                <a href="HTML/services.html" class="btn btn-outline-secondary px-5 rounded-pill fw-bold" style="border-color: #F06292; color: #F06292;">Xem Tất Cả Dịch Vụ</a>
-            </div>
-        </div>
-    </section>
+<?php
+require_once 'config/database.php';
+$db = new Database();
+$conn = $db->getConnection();
 
-    <section class="py-5 text-white shadow-inner" style="background-color: #F06292;">
+$stmt = $conn->prepare("SELECT * FROM dichvu WHERE status = 1 ORDER BY id DESC LIMIT 12");
+$stmt->execute();
+$featured_services = $stmt->fetchAll(PDO::FETCH_ASSOC);
+?>
+
+<section class="py-5">
+    <div class="container py-5">
+        <h2 class="text-center fw-bold display-6 mb-5">Dịch Vụ Nổi Bật</h2>
+
+        <div class="row align-items-center">
+
+            <!-- NÚT TRÁI -->
+            <div class="col-auto d-none d-lg-flex">
+                <button class="btn btn-light shadow rounded-circle"
+                        type="button"
+                        data-bs-target="#servicesCarousel"
+                        data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" style="filter: invert(1);"></span>
+                </button>
+            </div>
+
+            <!-- CAROUSEL -->
+            <div class="col">
+                <div id="servicesCarousel" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+
+                        <?php
+                        $chunks = array_chunk($featured_services, 4);
+                        foreach ($chunks as $index => $group):
+                        ?>
+                            <div class="carousel-item <?= $index === 0 ? 'active' : '' ?>">
+                                <div class="row g-4">
+                                    <?php foreach ($group as $service): ?>
+                                        <div class="col-md-6 col-lg-3">
+                                            <div class="card border-0 shadow-sm h-100 rounded-4 overflow-hidden">
+                                                <img src="<?= htmlspecialchars($service['hinh_anh']); ?>"
+                                                     class="card-img-top"
+                                                     style="height:200px; object-fit:cover;"
+                                                     alt="<?= htmlspecialchars($service['tendichvu']); ?>">
+                                                <div class="card-body p-4 text-center">
+                                                    <h3 class="h5 fw-bold">
+                                                        <?= htmlspecialchars($service['tendichvu']); ?>
+                                                    </h3>
+                                                    <p class="text-muted small">
+                                                        <?= mb_strimwidth($service['mo_ta_ngan'], 0, 85, '...'); ?>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- NÚT PHẢI -->
+            <div class="col-auto d-none d-lg-flex">
+                <button class="btn btn-light shadow rounded-circle"
+                        type="button"
+                        data-bs-target="#servicesCarousel"
+                        data-bs-slide="next">
+                    <span class="carousel-control-next-icon" style="filter: invert(1);"></span>
+                </button>
+            </div>
+
+        </div>
+
+        <div class="text-center mt-5">
+            <a href="customer/services.php"
+               class="btn btn-outline-secondary px-5 rounded-pill fw-bold"
+               style="border-color:#F06292; color:#F06292;">
+                Xem Tất Cả Dịch Vụ
+            </a>
+        </div>
+    </div>
+</section>
+<section class="py-5 text-white shadow-inner" style="background-color: #F06292;">
         <div class="container py-4">
             <div class="row g-4 text-center">
                 <div class="col-6 col-md-3">
@@ -161,21 +197,22 @@
             </div>
         </div>
     </section>
-
-    <section class="py-5 text-center text-white" style="background-color: #2fb3a5;">
+    <!-- CTA -->
+    <section class="py-5 text-center text-white" style="background-color:#2fb3a5;">
         <div class="container py-5">
-            <h2 class="display-5 fw-bold mb-3">Sẵn Sàng Chăm Sóc Gia Đình?</h2>
-            <p class="fs-5 mb-4 opacity-75">Liên hệ với chúng tôi ngay để được tư vấn miễn phí.</p>
-            <button class="btn btn-light btn-lg btn-outline-primary px-5 text-black rounded-pill shadow-lg hover-lift" onclick="window.location.href='HTML/contact.html'">Liên Hệ Ngay</button>
+            <h2 class="display-6 fw-bold mb-3">Bạn Cần Người Chăm Sóc Tin Cậy?</h2>
+            <p class="fs-5 mb-4 opacity-75">Chúng tôi luôn sẵn sàng đồng hành cùng gia đình bạn.</p>
+            <button class="btn btn-light btn-lg px-5 rounded-pill shadow" onclick="window.location.href='customer/contact.php'">Liên Hệ Ngay</button>
         </div>
     </section>
 
+    <!-- Footer -->
     <footer class="bg-dark text-white pt-5 pb-3">
         <div class="container">
             <div class="row g-4 mb-4">
                 <div class="col-lg-4">
-                    <h3 class="h4 fw-bold mb-3" style="color: #F06292;">MamaCore</h3>
-                    <p class="opacity-75">Cung cấp dịch vụ chăm sóc sức khỏe mẹ và bé chuyên nghiệp hàng đầu tại Việt Nam.</p>
+                    <h3 class="h4 fw-bold mb-3" style="color:#F06292;">MamaCore</h3>
+                    <p class="opacity-75">Dịch vụ chăm sóc Mẹ và Bé.</p>
                 </div>
                 <div class="col-lg-2">
                     <h4 class="h5 fw-bold mb-3">Liên Kết</h4>
@@ -187,26 +224,26 @@
                 </div>
                 <div class="col-lg-3">
                     <h4 class="h5 fw-bold mb-3">Liên Hệ</h4>
-                    <p class="mb-1 opacity-75 small"><i class="fas fa-phone me-2"></i> 1900-1234</p>
-                    <p class="mb-1 opacity-75 small"><i class="fas fa-envelope me-2"></i> info@mamacore.vn</p>
-                    <p class="mb-1 opacity-75 small"><i class="fas fa-map-marker-alt me-2"></i> Hà Nội, Việt Nam</p>
+                    <p class="mb-1 opacity-75 small"><i class="fas fa-phone me-2"></i> 1900 8888</p>
+                    <p class="mb-1 opacity-75 small"><i class="fas fa-envelope me-2"></i> contact@mamacore.vn</p>
+                    <p class="mb-1 opacity-75 small"><i class="fas fa-map-marker-alt me-2"></i> Việt Nam</p>
                 </div>
                 <div class="col-lg-3">
                     <h4 class="h5 fw-bold mb-3">Theo Dõi</h4>
                     <div class="d-flex gap-3">
-                        <a href="#" class="btn btn-outline-light rounded-circle shadow-sm"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="btn btn-outline-light rounded-circle shadow-sm"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="btn btn-outline-light rounded-circle shadow-sm"><i class="fab fa-youtube"></i></a>
+                        <a href="#" class="btn btn-outline-light rounded-circle"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="btn btn-outline-light rounded-circle"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="btn btn-outline-light rounded-circle"><i class="fab fa-youtube"></i></a>
                     </div>
                 </div>
             </div>
             <hr class="opacity-25">
-            <p class="text-center small opacity-50">&copy; 2026 MamaCore. Tất cả quyền được bảo lưu.</p>
+            <p class="text-center small opacity-50">&copy; 2026 MamaCore. All rights reserved.</p>
         </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="JS/style.js"></script>
-    </div>
+</div>
 </body>
 </html>

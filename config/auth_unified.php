@@ -13,13 +13,13 @@ function isAdmin() {
     return isLoggedIn() && $_SESSION['role'] === 'admin';
 }
 
+
 function requireAdmin($redirectTo = '/CSMVB/admin/login.php') {
     if (!isAdmin()) {
         header('Location: ' . $redirectTo);
         exit();
     }
 }
-
 
 
 
@@ -65,11 +65,14 @@ function getCurrentUser() {
         'password' => ''
     ];
 }
-
 // Xử lý đăng xuất
 function logout() {
     session_destroy();
     header('Location: /CSMVB/admin/login.php');
+    exit();
+}
+function dasboard() {
+    header('Location: /CSMVB/admin/dasboard/index.php');
     exit();
 }
 ?>

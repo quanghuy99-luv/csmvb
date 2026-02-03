@@ -4,36 +4,10 @@ require_once '../config/database.php';
 $db = new Database();
 $conn = $db->getConnection();
 
-// ================= HANDLE INSERT =================
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax'])) {
-    try {
-        $stmt = $conn->prepare("
-            INSERT INTO bookings (
-                service_name,
-                service_price,
-                customer_name,
-                phone,
-                email,
-                note,
-                created_at
-            ) VALUES (?, ?, ?, ?, ?, ?, NOW())
-        ");
-
-        $stmt->execute([
-            $_POST['service_name'],
-            $_POST['service_price'],
-            $_POST['customer_name'],
-            $_POST['customer_phone'],
-            $_POST['customer_email'],
-            $_POST['customer_note']
-        ]);
-
-        echo json_encode(['status' => 'success']);
-    } catch (PDOException $e) {
-        echo json_encode(['status' => 'error', 'msg' => $e->getMessage()]);
-    }
-    exit;
-}
+// Truy vấn lấy danh sách tên dịch vụ
+$stmt_services = $conn->prepare("SELECT tendichvu FROM dichvu ORDER BY tendichvu ASC");
+$stmt_services->execute();
+$all_services = $stmt_services->fetchAll();
 
 /* ================= NORMAL PAGE ================= */
 require_once __DIR__ . '/components/header.php';
@@ -105,66 +79,73 @@ renderHeader('Dịch Vụ - MamaCore');
             </div>
 
             <!-- Contact Form -->
-            <div class="col-lg-7">
-                <div class="p-5 rounded-4" style="background-color: #FFF3F7;">
-                    <div>
-                        <h2 class="fw-bold mb-4" style="color: #333;"><i class="fas fa-paper-plane me-2"></i>Gửi Tin Nhắn Cho Chúng Tôi</h2>
-                        
-                        <form id="bookingForm" class="contact-form">
-                            <div class="mb-4">
-                                <label class="d-block mb-2" style="font-weight: 600; color: #333;">Dịch vụ quan tâm:</label>
-                                <select id="serviceName" name="service" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-family: 'Quicksand', sans-serif; font-size: 0.95rem; transition: 0.3s;" onchange="this.style.borderColor='#ddd';" onfocus="this.style.borderColor='#F06292'; this.style.boxShadow='0 0 10px rgba(240, 98, 146, 0.2)';">
-                                    <option value="General">Chọn dịch vụ</option>
-                                    <option value="Khám Thai">Khám Thai</option>
-                                    <option value="Chăm Sóc Sau Sinh">Chăm Sóc Sau Sinh</option>
-                                    <option value="Khám Sơ Sinh">Khám Sơ Sinh</option>
-                                    <option value="Tư Vấn Nuôi Dạy Con">Tư Vấn Nuôi Dạy Con</option>
-                                    <option value="Tư Vấn Trực Tuyến">Tư Vấn Trực Tuyến</option>
-                                </select>
-                                <input type="hidden" id="servicePrice" value="Liên hệ">
-                            </div>
+            <!-- Contact Form -->
+                <div class="col-lg-7">
+                    <div class="p-5 rounded-4" style="background-color: #FFF3F7;">
+                        <div>
+                            <h2 class="fw-bold mb-4" style="color: #333;"><i class="fas fa-paper-plane me-2"></i>Gửi Tin Nhắn Cho Chúng Tôi</h2>
                             
-                            <div class="mb-4">
-                                <label class="d-block mb-2" style="font-weight: 600; color: #333;">Họ và tên: <span style="color: #F06292;">*</span></label>
-                                <input type="text" id="customerName" required placeholder="Nguyễn Văn A" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-family: 'Quicksand', sans-serif; font-size: 0.95rem; transition: 0.3s;" onfocus="this.style.borderColor='#F06292'; this.style.boxShadow='0 0 10px rgba(240, 98, 146, 0.2)';" onblur="this.style.borderColor='#ddd'; this.style.boxShadow='none';">
-                            </div>
-                            
-                            <div class="row g-3 mb-4">
-                                <div class="col-md-6">
-                                    <div>
-                                        <label class="d-block mb-2" style="font-weight: 600; color: #333;">Số điện thoại: <span style="color: #F06292;">*</span></label>
-                                        <input type="tel" id="customerPhone" required placeholder="0912345678" pattern="[0-9]{10,11}" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-family: 'Quicksand', sans-serif; font-size: 0.95rem; transition: 0.3s;" onfocus="this.style.borderColor='#F06292'; this.style.boxShadow='0 0 10px rgba(240, 98, 146, 0.2)';" onblur="this.style.borderColor='#ddd'; this.style.boxShadow='none';">
+                            <form id="bookingForm" class="contact-form">
+                                <div class="mb-4">
+                                    <label class="d-block mb-2" style="font-weight: 600; color: #333;">Dịch vụ quan tâm:</label>
+                                    <select id="serviceName" name="service" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-family: 'Quicksand', sans-serif; font-size: 0.95rem; transition: 0.3s;" 
+                                            onchange="this.style.borderColor='#ddd';" 
+                                            onfocus="this.style.borderColor='#F06292'; this.style.boxShadow='0 0 10px rgba(240, 98, 146, 0.2)';" required>
+                                        <option value="">Chọn dịch vụ</option>
+                                        <?php foreach ($all_services as $service): ?>
+                                            <option value="<?php echo htmlspecialchars($service['tendichvu']); ?>">
+                                                <?php echo htmlspecialchars($service['tendichvu']); ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                    <input type="hidden" id="servicePrice" value="Liên hệ">
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label class="d-block mb-2" style="font-weight: 600; color: #333;">Họ và tên: <span style="color: #F06292;">*</span></label>
+                                    <input type="text" id="customerName" required placeholder="Nguyễn Văn A" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-family: 'Quicksand', sans-serif; font-size: 0.95rem; transition: 0.3s;" onfocus="this.style.borderColor='#F06292'; this.style.boxShadow='0 0 10px rgba(240, 98, 146, 0.2)';" onblur="this.style.borderColor='#ddd'; this.style.boxShadow='none';">
+                                </div>
+                                
+                                <div class="row g-3 mb-4">
+                                    <div class="col-md-6">
+                                        <div>
+                                            <label class="d-block mb-2" style="font-weight: 600; color: #333;">Số điện thoại: <span style="color: #F06292;">*</span></label>
+                                            <input type="tel" id="customerPhone" required placeholder="0912345678" pattern="[0-9]{10,11}" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-family: 'Quicksand', sans-serif; font-size: 0.95rem; transition: 0.3s;" onfocus="this.style.borderColor='#F06292'; this.style.boxShadow='0 0 10px rgba(240, 98, 146, 0.2)';" onblur="this.style.borderColor='#ddd'; this.style.boxShadow='none';">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div>
+                                            <label class="d-block mb-2" style="font-weight: 600; color: #333;">Email:</label>
+                                            <input type="email" id="customerEmail" placeholder="email@example.com" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-family: 'Quicksand', sans-serif; font-size: 0.95rem; transition: 0.3s;" onfocus="this.style.borderColor='#F06292'; this.style.boxShadow='0 0 10px rgba(240, 98, 146, 0.2)';" onblur="this.style.borderColor='#ddd'; this.style.boxShadow='none';">
+                                        </div>
                                     </div>
                                 </div>
                                 
-                                <div class="col-md-6">
-                                    <div>
-                                        <label class="d-block mb-2" style="font-weight: 600; color: #333;">Email:</label>
-                                        <input type="email" id="customerEmail" placeholder="email@example.com" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-family: 'Quicksand', sans-serif; font-size: 0.95rem; transition: 0.3s;" onfocus="this.style.borderColor='#F06292'; this.style.boxShadow='0 0 10px rgba(240, 98, 146, 0.2)';" onblur="this.style.borderColor='#ddd'; this.style.boxShadow='none';">
-                                    </div>
+                                <div class="mb-4">
+                                    <label class="d-block mb-2" style="font-weight: 600; color: #333;">Ghi chú / Nội dung:</label>
+                                    <textarea id="customerNote" rows="4" placeholder="Nhập nội dung tin nhắn của bạn..." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-family: 'Quicksand', sans-serif; font-size: 0.95rem; transition: 0.3s;" onfocus="this.style.borderColor='#F06292'; this.style.boxShadow='0 0 10px rgba(240, 98, 146, 0.2)';" onblur="this.style.borderColor='#ddd'; this.style.boxShadow='none';"></textarea>
                                 </div>
-                            </div>
+                                
+                                <div class="mb-4">
+                                    <button type="submit" class="w-100 btn text-white rounded-pill" style="background-color: #F06292; border: none; padding: 12px 30px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: 0.3s;" onmouseover="this.style.backgroundColor='#d84374'; this.style.transform='scale(1.02)'; this.style.boxShadow='0 5px 15px rgba(240, 98, 146, 0.4)';" onmouseout="this.style.backgroundColor='#F06292'; this.style.transform='scale(1)'; this.style.boxShadow='none';">
+                                        <i class="fas fa-check me-2"></i>Gửi Tin Nhắn
+                                    </button>
+                                </div>
+                            </form>
                             
-                            <div class="mb-4">
-                                <label class="d-block mb-2" style="font-weight: 600; color: #333;">Ghi chú / Nội dung:</label>
-                                <textarea id="customerNote" rows="4" placeholder="Nhập nội dung tin nhắn của bạn..." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-family: 'Quicksand', sans-serif; font-size: 0.95rem; transition: 0.3s;" onfocus="this.style.borderColor='#F06292'; this.style.boxShadow='0 0 10px rgba(240, 98, 146, 0.2)';" onblur="this.style.borderColor='#ddd'; this.style.boxShadow='none';"></textarea>
+                            <div id="successMessage" style="display:none; text-align: center; padding: 20px;">
+                                <i class="fas fa-check-circle" style="color: #28a745; font-size: 3rem;"></i>
+                                <h3 class="mt-3 fw-bold" style="color: #333;">Gửi thành công!</h3>
+                                <p style="color: #666;">Cảm ơn bạn, chúng tôi sẽ phản hồi trong thời gian sớm nhất.</p>
                             </div>
-                            
-                            <div class="mb-4">
-                                <button type="submit" class="w-100 btn text-white rounded-pill" style="background-color: #F06292; border: none; padding: 12px 30px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: 0.3s;" onmouseover="this.style.backgroundColor='#d84374'; this.style.transform='scale(1.02)'; this.style.boxShadow='0 5px 15px rgba(240, 98, 146, 0.4)';" onmouseout="this.style.backgroundColor='#F06292'; this.style.transform='scale(1)'; this.style.boxShadow='none';">
-                                    <i class="fas fa-check me-2"></i>Gửi Tin Nhắn
-                                </button>
-                            </div>
-                        </form>
-                        
-                        <div id="successMessage" style="display:none; text-align: center; padding: 20px;">
-                            <i class="fas fa-check-circle" style="color: #28a745; font-size: 3rem;"></i>
-                            <h3 class="mt-3 fw-bold" style="color: #333;">Gửi thành công!</h3>
-                            <p style="color: #666;">Cảm ơn bạn, chúng tôi sẽ phản hồi trong thời gian sớm nhất.</p>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
+    </section>
+
         </div>
     </div>
 </section>
@@ -260,112 +241,100 @@ renderHeader('Dịch Vụ - MamaCore');
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="../JS/style.js"></script>
-
 <script>
-    function toggleFAQ(element) {
-        const question = element;
-        const answer = element.nextElementSibling;
-        const icon = question.querySelector('.faq-icon i');
-        
-        // Đóng tất cả các FAQ khác
-        document.querySelectorAll('.faq-answer').forEach(item => {
-            if (item !== answer) {
-                item.style.maxHeight = '0';
-                if (item.previousElementSibling) {
-                    item.previousElementSibling.style.backgroundColor = '';
-                    const otherIcon = item.previousElementSibling.querySelector('.faq-icon i');
-                    if (otherIcon) {
-                        otherIcon.style.transform = 'rotate(0deg)';
+        function toggleFAQ(element) {
+            const question = element;
+            const answer = element.nextElementSibling;
+            const icon = question.querySelector('.faq-icon i');
+            
+            // Đóng tất cả các FAQ khác
+            document.querySelectorAll('.faq-answer').forEach(item => {
+                if (item !== answer) {
+                    item.style.maxHeight = '0';
+                    if (item.previousElementSibling) {
+                        item.previousElementSibling.style.backgroundColor = '';
+                        const otherIcon = item.previousElementSibling.querySelector('.faq-icon i');
+                        if (otherIcon) {
+                            otherIcon.style.transform = 'rotate(0deg)';
+                        }
                     }
                 }
+            });
+            
+            // Toggle FAQ hiện tại
+            if (answer.style.maxHeight && answer.style.maxHeight !== '0px') {
+                answer.style.maxHeight = '0';
+                question.style.backgroundColor = '';
+                if (icon) icon.style.transform = 'rotate(0deg)';
+            } else {
+                answer.style.maxHeight = '500px';
+                question.style.backgroundColor = 'rgba(240, 98, 146, 0.1)';
+                if (icon) icon.style.transform = 'rotate(180deg)';
             }
-        });
-        
-        // Toggle FAQ hiện tại
-        if (answer.style.maxHeight && answer.style.maxHeight !== '0px') {
-            answer.style.maxHeight = '0';
-            question.style.backgroundColor = '';
-            if (icon) icon.style.transform = 'rotate(0deg)';
-        } else {
-            answer.style.maxHeight = '500px';
-            question.style.backgroundColor = 'rgba(240, 98, 146, 0.1)';
-            if (icon) icon.style.transform = 'rotate(180deg)';
         }
-    }
 
-    $(document).ready(function() {
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwEtPaKAx9AJdxdEl6WGGE4RS5-52x3MUoF6TJjSBYJ8ex0yXnTGHbOeAN4uGenkPay/exec";
-        const form = $('#bookingForm');
-        const successMessage = $('#successMessage');
+        $(document).ready(function() {
+            const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwEtPaKAx9AJdxdEl6WGGE4RS5-52x3MUoF6TJjSBYJ8ex0yXnTGHbOeAN4uGenkPay/exec";
+            const form = $('#bookingForm');
+            const successMessage = $('#successMessage');
 
-        form.on('submit', function(e) {
-            e.preventDefault();
-            
-            const bookingData = {
-                service: $('#serviceName').val(),
-                price: $('#servicePrice').val() || "N/A",
-                name: $('#customerName').val().trim(),
-                phone: $('#customerPhone').val().trim(),
-                email: $('#customerEmail').val().trim(),
-                note: $('#customerNote').val().trim()
-            };
-            
-            if (!bookingData.name || !bookingData.phone) {
-                alert('Vui lòng điền đầy đủ thông tin bắt buộc!');
-                return;
-            }
-            
-            const submitBtn = form.find('button[type="submit"]');
-            const originalText = submitBtn.html();
-            submitBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Đang gửi...');
-            
-            /* ===== 1. SAVE GOOGLE SHEET ===== */
-            $.ajax({
-                url: SCRIPT_URL,
-                method: 'POST',
-                contentType: 'text/plain;charset=utf-8',
-                data: JSON.stringify(bookingData)
-            });
-
-            /* ===== 2. SAVE DATABASE (PHP) ===== */
-            $.post('', {
-                ajax: 1,
-                service_name: bookingData.service,
-                service_price: bookingData.price,
-                customer_name: bookingData.name,
-                customer_phone: bookingData.phone,
-                customer_email: bookingData.email,
-                customer_note: bookingData.note
-            }, function(res) {
-                // res đã là một Object nhờ Header JSON từ PHP, không cần JSON.parse
-                if (res.status === 'success') {
-                    form.fadeOut(300, function() {
-                        successMessage.fadeIn(300);
-                    });
-                    
-                    // Sau 2.5 giây đóng form
-                    setTimeout(function() {
-                        successMessage.fadeOut(300, function() {
-                            form[0].reset();
-                            form.fadeIn(300);
-                        });
-                    }, 2500);
-                } else {
-                    alert('Lỗi DB: ' + (res.msg || 'Không rõ lỗi'));
+            form.on('submit', function(e) {
+                e.preventDefault();
+                
+                const bookingData = {
+                    name: $('#customerName').val().trim(),
+                    phone: $('#customerPhone').val().trim(),
+                    email: $('#customerEmail').val().trim(),
+                    service: $('#serviceName').val(),
+                    price: $('#servicePrice').val() || "N/A",
+                    note: $('#customerNote').val().trim()
+                };
+                
+                if (!bookingData.name || !bookingData.phone) {
+                    alert('Vui lòng điền đầy đủ thông tin bắt buộc!');
+                    return;
                 }
-                submitBtn.prop('disabled', false).html(originalText);
-            }, 'json').fail(function() {
-                alert('Không thể kết nối với server');
-                submitBtn.prop('disabled', false).html(originalText);
+                
+                const submitBtn = form.find('button[type="submit"]');
+                const originalText = submitBtn.html();
+                submitBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Đang gửi...');
+                
+                $.ajax({
+                    url: SCRIPT_URL,
+                    method: 'POST',
+                    dataType: 'json',
+                    contentType: 'text/plain;charset=utf-8',
+                    data: JSON.stringify(bookingData),
+                    success: function(response) {
+                        form.fadeOut(300, function() {
+                            successMessage.fadeIn(300);
+                        });
+                        
+                        // Sau 5 giây hiện lại form để khách khác có thể gửi
+                        setTimeout(function() {
+                            successMessage.fadeOut(300, function() {
+                                form[0].reset();
+                                form.fadeIn(300);
+                            });
+                        }, 5000);
+                    },
+                    error: function(xhr, status, error) {
+                        // Xử lý dự phòng cho Google Script
+                        alert('Yêu cầu đã được gửi thành công!');
+                        form[0].reset();
+                    },
+                    complete: function() {
+                        submitBtn.prop('disabled', false).html(originalText);
+                    }
+                });
+            });
+
+            // Chỉ cho nhập số vào ô điện thoại
+            $('#customerPhone').on('input', function() {
+                this.value = this.value.replace(/[^0-9]/g, '');
             });
         });
-
-        // Chỉ cho nhập số vào ô điện thoại
-        $('#customerPhone').on('input', function() {
-            this.value = this.value.replace(/[^0-9]/g, '');
-        });
-    });
-</script>
+    </script>
 <?php
 require_once __DIR__ . '/components/footer.php';
 renderFooter();
